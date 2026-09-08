@@ -353,7 +353,7 @@ specification.
 Initial draft
 
 # Acknowledgments
-{:numbered="false"}
+
 
 TODO acknowledge.
 
