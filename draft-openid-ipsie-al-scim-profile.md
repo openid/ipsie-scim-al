@@ -1,5 +1,5 @@
 %%%
-title = "SCIM 2.0 IPSIE Profile"
+title = "IPSIE AL SCIM 2.0 Profile"
 abbrev = "SCIM IPSIE"
 ipr = "trust200902"
 area = "Applications and Real-Time"
@@ -8,9 +8,7 @@ keyword = ["scim", "ipsie", "provisioning", "identity", "oauth"]
 
 [seriesInfo]
 name = "Internet-Draft"
-value = "draft-schreiber-scim-ipsie-profile-latest"
-stream = "IETF"
-status = "informational"
+value = "draft-openid-ipsie-al-scim-profile-latest"
 
 [[author]]
 initials = "J."
@@ -41,7 +39,7 @@ This document defines a profile for SCIM 2.0 to meet the security and interopera
 This note is to be removed before publishing as an RFC.
 
 Source for this draft and an issue tracker can be found at
-<https://github.com/jischr/scim-ipsie-profiles>.
+<https://github.com/openid/ipsie-scim-al>.
 
 # Introduction
 
