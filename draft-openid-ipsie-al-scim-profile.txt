@@ -88,6 +88,8 @@ Table of Contents
    10. Compliance Statement
    11. Normative References
    Appendix A.  Notices
+   Appendix B.  Document History
+   Appendix C.  Acknowledgments
    Authors' Addresses
 
 1.  Discussion Venues
@@ -563,7 +565,7 @@ Table of Contents
 
 Appendix A.  Notices
 
-   Copyright (c) 2026 The OpenID Foundation.
+   Copyright (c) 2025 The OpenID Foundation.
 
    The OpenID Foundation (OIDF) grants to any Contributor, developer,
    implementer, or other interested party a non-exclusive, royalty free,
@@ -599,6 +601,18 @@ Appendix A.  Notices
    interested party to bring to its attention any copyrights, patents,
    patent applications, or other proprietary rights that may cover
    technology that may be required to practice this specification.
+
+Appendix B.  Document History
+
+   [[ To be removed from the final specification ]]
+
+   -00
+
+   Initial draft
+
+Appendix C.  Acknowledgments
+
+   TODO acknowledge.
 
 Authors' Addresses
 
