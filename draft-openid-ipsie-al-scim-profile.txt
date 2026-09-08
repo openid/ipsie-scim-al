@@ -5,12 +5,12 @@
 IPSIE                                                       J. Schreiber
 Internet-Draft                                               Crowdstrike
 Intended status: Informational                                D. Zollner
-Expires: 18 February 2027                                           Okta
-                                                          17 August 2026
+Expires: 12 March 2027                                              Okta
+                                                        8 September 2026
 
 
-                         SCIM 2.0 IPSIE Profile
-               draft-schreiber-scim-ipsie-profile-latest
+                       IPSIE AL SCIM 2.0 Profile
+               draft-openid-ipsie-al-scim-profile-latest
 
 Abstract
 
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 18 February 2027.
+   This Internet-Draft will expire on 12 March 2027.
 
 Copyright Notice
 
@@ -94,8 +94,8 @@ Table of Contents
    This note is to be removed before publishing as an RFC.
 
    Source for this draft and an issue tracker can be found at
-   https://github.com/jischr/scim-ipsie-profiles
-   (https://github.com/jischr/scim-ipsie-profiles).
+   https://github.com/openid/ipsie-scim-al (https://github.com/openid/
+   ipsie-scim-al).
 
 2.  Introduction
 
