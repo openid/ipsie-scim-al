@@ -9,6 +9,7 @@ keyword = ["scim", "ipsie", "provisioning", "identity", "oauth"]
 [seriesInfo]
 name = "Internet-Draft"
 value = "draft-openid-ipsie-al-scim-profile-latest"
+submissiontype = "independent"
 
 [[author]]
 initials = "J."
