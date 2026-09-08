@@ -1,7 +1,7 @@
 %%%
 title = "IPSIE AL SCIM 2.0 Profile Draft 00"
 abbrev = "SCIM IPSIE"
-ipr = "trust200902"
+ipr = "none"
 area = "Applications and Real-Time"
 workgroup = "IPSIE Working Group"
 keyword = ["scim", "ipsie", "provisioning", "identity", "oauth"]
