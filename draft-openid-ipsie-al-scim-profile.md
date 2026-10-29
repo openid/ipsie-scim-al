@@ -270,7 +270,7 @@ The Application MUST include the following attributes in the Group schema:
 
 Additionally, the "externalId" attribute defined as optional in the "common" resource schema in [@!RFC7643] MUST be supported by the Application.
 
-The Application SHOULD NOT allow multiple groups to have the same value for the "displayName" attribute".
+The Application SHOULD NOT allow multiple groups to have the same value for the "displayName" attribute.
 
 The Identity Service SHOULD use a unique value for the "displayName" attribute.
 
