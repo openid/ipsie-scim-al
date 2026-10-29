@@ -201,7 +201,7 @@ The Application MUST support retrieving a single user by ID via the SCIM operati
 
 The Application MUST support each of the following filter expressions whose attributes it supports:
 
-* username eq \{username\}
+* userName eq \{username\}
 * externalId eq \{externalId\}
 * emails[value eq \{email\}]
 * emails[type eq "work" and value eq \{email\}]
