@@ -148,6 +148,21 @@ The Application MUST include the "userName" attribute in the User schema.
 
 The requirements in this section apply if the Application supports the "active" attribute. Changes to the user activation status, such as deactivation and reactivation, are performed by the SCIM operation PATCH /Users/{id}.
 
+To deactivate a user, the Identity Service MUST send a PATCH /Users/{id} request containing the following operation:
+
+~~~ json
+{
+  "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+  "Operations": [
+    {"op": "replace", "path": "active", "value": false}
+  ]
+}
+~~~
+
+To reactivate a user, the Identity Service MUST send the same request with a "value" of true.
+
+At AL1, the Application is only required to support PATCH operations on the "active" attribute, and MAY reject PATCH operations on other attributes. Support for PATCH operations on other attributes is required at AL2 ((#update-user)).
+
 The Identity Service SHOULD propagate user deactivation events to the Application within 5 minutes of the user being deactivated.
 
 The Application SHOULD respond to user deactivation events by revoking the ability for the user to continue accessing the Application, including the revocation of currently active sessions. Session revocation mechanisms are outside the scope of this profile. Revocation SHOULD occur within 5 minutes of receiving the deactivation request.
@@ -214,7 +229,7 @@ A user resource may have various credentials or similar data associated with the
 
 The Identity Service and the Application MUST support user creation via POST /Users.
 
-### Update User (PATCH /Users/{id})
+### Update User (PATCH /Users/{id}) {#update-user}
 
 The Identity Service and the Application MUST support updating a user's attribute values via the SCIM operation PATCH /Users/{id}.
 
