@@ -286,7 +286,7 @@ The Application MUST support retrieval of all groups via the SCIM operation GET 
 
 The Identity Service SHOULD include excludedAttributes=members in the HTTP URI when listing all groups.
 
-### Get Group By ID (GET /Group/{id})
+### Get Group By ID (GET /Groups/{id})
 
 The Application MUST support retrieving a single group by ID via the SCIM operation GET /Groups/{id}.
 
@@ -298,7 +298,7 @@ The Application MUST support the following filter expressions for groups:
 * externalId eq \{externalId\}
 * members[value eq \{memberId\}]
 
-### Update Group (PATCH /Group/{id})
+### Update Group (PATCH /Groups/{id})
 
 The Identity Service and the Application MUST support updating a group's attribute values via the SCIM operation PATCH /Groups/{id}.
 
