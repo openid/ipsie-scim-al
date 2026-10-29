@@ -140,6 +140,11 @@ The Application MUST support at least one of the following, and MAY support both
 
 The Identity Service MUST deprovision users using a mechanism the Application supports.
 
+The Identity Service MUST deactivate or delete a user at the Application whenever the user is no longer entitled to access the Application. This includes, but is not limited to:
+
+* The user being deactivated or deleted in the Identity Service.
+* The user's assignment to the Application being removed in the Identity Service, whether the user was assigned directly or through a group.
+
 ## Schema {#al1-schema}
 
 The Application MUST include the "userName" attribute in the User schema.
