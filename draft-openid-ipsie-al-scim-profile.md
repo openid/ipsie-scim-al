@@ -109,7 +109,7 @@ The Identity Service and Application MUST use OAuth 2.0 [@!RFC6749] for authenti
 The following requirements ensure consistent and secure handling of access tokens and authorization server configuration:
 
 * OAuth 2.0 interactions MUST use the client_credentials grant type. The Identity Service MUST authenticate to the Application's OAuth 2.0 authorization server using JWT client authentication ("private_key_jwt") as defined in [@!RFC7523] section 2.2, sending the "client_assertion" and "client_assertion_type" parameters in the token request body as defined in [@!RFC7521] section 4.2.
-* The Identity Provider SHALL acquire an access token and present that token in the {Authorization: Bearer} header on all subsequent SCIM requests.
+* The Identity Service SHALL acquire an access token and present that token in the {Authorization: Bearer} header on all subsequent SCIM requests.
 * Client authentication methods that use a shared secret, such as "client_secret_basic" and "client_secret_post", MUST NOT be used.
 * The Application MUST expose OAuth Authorization Server metadata as defined in [@!RFC8414], and its metadata document MUST include a "token_endpoint" value identifying its OAuth 2.0 token endpoint.
 * The Identity Service MUST publish the public keys used to sign its client assertions at a "jwks_uri" ([@!RFC7591] section 2), which the Application's authorization server uses to validate client assertions.
