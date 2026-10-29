@@ -117,8 +117,7 @@ The following requirements ensure consistent and secure handling of access token
 ## SCIM Interoperability Requirements
 
 * Implementations conforming to this profile MUST also conform to the SCIM 2.0 Interoperability Profile [@!I-D.zollner-scim-interop-profile]. The requirements of this profile supplement and extend those of the SCIM 2.0 Interoperability Profile.
-* The Identity Service SHALL implement the required functionality of a SCIM client as defined in [@!RFC7643] and [@!RFC7644].
-* The Application SHALL implement the required functionality of a SCIM service provider as defined in [@!RFC7643] and [@!RFC7644].
+* For every resource type, endpoint, operation, and attribute that the Identity Service or the Application implements, whether or not this profile requires it, the implementation MUST behave as specified by the specification that defines it: [@!RFC7643] and [@!RFC7644] as modified by the SCIM 2.0 Interoperability Profile and this profile, or, for features defined by other SCIM specifications (e.g., cursor-based pagination [@!RFC9865]), that specification.
 * Local modifications to Users or Groups in the Application are prohibited.
 
 ## Performance and Efficiency
