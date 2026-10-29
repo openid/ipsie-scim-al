@@ -2,14 +2,12 @@
 title = "IPSIE AL SCIM 2.0 Profile Draft 00"
 abbrev = "SCIM IPSIE"
 ipr = "none"
-area = "Applications and Real-Time"
 workgroup = "IPSIE Working Group"
 keyword = ["scim", "ipsie", "provisioning", "identity", "oauth"]
 
 [seriesInfo]
 name = "Internet-Draft"
 value = "draft-openid-ipsie-al-scim-profile-latest"
-stream = "IETF"
 status = "informational"
 
 [[author]]
