@@ -209,8 +209,6 @@ The Identity Service and the Application MUST support updating a user's attribut
 
 The Application MUST support retrieval of all users via the SCIM operation GET /Users.
 
-The Application SHOULD avoid returning more than 1,000 users per page. Support for cursor-based pagination by the Application is RECOMMENDED.
-
 ## Group Provisioning Operations
 
 Requirements for group provisioning operations are defined in this section. The Application MAY implement support for groups and MUST follow the below requirements if it does.
