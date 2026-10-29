@@ -94,7 +94,7 @@ Application
 
 > Acts as the SCIM server or service provider, hosting SCIM endpoints and processing all provisioning requests.
 
-Note: When SCIM is applied to the context of IPSIE, the Identity Service acts as the SCIM client and the Application acts as the SCIM service provider. The document will use the Role terms below for consistency across IPSIE profiles.
+Note: When SCIM is applied to the context of IPSIE, the Identity Service acts as the SCIM client and the Application acts as the SCIM service provider. The document will use the Role terms above for consistency across IPSIE profiles.
 
 # Shared Prerequisites
 
