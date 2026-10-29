@@ -178,6 +178,8 @@ When a user account is deactivated, all access mechanisms and authorizations ass
 
 The Application MUST allow reactivation of a deactivated user.
 
+A deactivated user MUST continue to be returned by GET /Users/{id} and by filter queries ((#list-users-by-alternate-identifier)), with the "active" attribute set to false.
+
 ## Delete User (DELETE /Users/{id}) {#delete-user}
 
 The Application MAY support deleting users via the SCIM operation DELETE /Users/{id}, subject to the requirement in (#deprovisioning-mechanisms) that it support at least one deprovisioning mechanism.
@@ -190,7 +192,7 @@ After a user is deleted, the Application MUST allow the creation of a new user w
 
 The Application MUST support retrieving a single user by ID via the SCIM operation GET /Users/{id}.
 
-## List Users By Alternate Identifier (GET /Users?)
+## List Users By Alternate Identifier (GET /Users?) {#list-users-by-alternate-identifier}
 
 The Application MUST support each of the following filter expressions whose attributes it supports:
 
