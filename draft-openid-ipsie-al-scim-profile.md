@@ -50,7 +50,7 @@ This document defines the SCIM 2.0 IPSIE Profile for enterprise identity lifecyc
 The profile is organized according to the three IPSIE Account Lifecycle assurance levels as defined in the IPSIE Levels specification:
 
 * **AL1 - User Deprovisioning**: The Application deprovisions users at the request of the Identity Service. This includes account deactivation and deletion.
-* **AL2 - User and Group Management**: The Identity Service synchronizes user provisioning and group membership with the Application. The Application accepts creation and updates of user accounts and maps groups and their memberships to application roles and capabilities.
+* **AL2 - User and Group Management**: The Identity Service manages the full lifecycle of user accounts at the Application, including creation and updates. If the Application supports groups, the Identity Service also synchronizes groups and their memberships, and the Application maps them to application roles and capabilities.
 * **AL3 - Role Management**: The Application exposes its available roles to the Identity Service, enabling centralized role assignment and synchronization.
 
 Each level is cumulative: AL2 requirements extend AL1, and AL3 requirements extend AL2.
@@ -215,7 +215,7 @@ At AL1, users may exist in the Application that the Identity Service did not cre
 
 # AL2: User and Group Management
 
-AL2 extends AL1. In addition to deprovisioning, the Identity Service synchronizes user provisioning and group membership with the Application. The Application MUST accept creation and updates of user accounts from the Identity Service and MUST prohibit local account creation for users managed by the Identity Service. The Application MUST support mapping Identity Service groups to local Application roles and capabilities.
+AL2 extends AL1. In addition to deprovisioning, the Identity Service manages the full lifecycle of user accounts at the Application and, if the Application supports Groups, synchronizes groups and their memberships. The Application MUST accept creation and updates of user accounts from the Identity Service and MUST prohibit local account creation for users managed by the Identity Service. If the Application supports Groups, it MUST support mapping Identity Service groups to local Application roles and capabilities.
 
 ## User Provisioning
 
