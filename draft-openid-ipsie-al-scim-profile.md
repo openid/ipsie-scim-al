@@ -166,7 +166,7 @@ To deactivate a user, the Identity Service MUST send a PATCH /Users/{id} request
 
 To reactivate a user, the Identity Service MUST send the same request with a "value" of true.
 
-At AL1, the Application is only required to support PATCH operations on the "active" attribute, and MAY reject PATCH operations on other attributes. Support for PATCH operations on other attributes is required at AL2 ((#update-user)).
+At AL1, the Application is only required to support PATCH operations on the "active" attribute and, if the Application supports the "externalId" attribute, on "externalId" ((#linking)), and MAY reject PATCH operations on other attributes. Support for PATCH operations on other attributes is required at AL2 ((#update-user)).
 
 The Identity Service SHOULD propagate user deactivation events to the Application within 5 minutes of the user being deactivated.
 
@@ -205,6 +205,13 @@ The Application MUST support each of the following filter expressions whose attr
 * externalId eq \{externalId\}
 * emails[value eq \{email\}]
 * emails[type eq "work" and value eq \{email\}]
+
+## Locating and Linking Existing Users {#linking}
+
+At AL1, users may exist in the Application that the Identity Service did not create, for example users created by single sign-on just-in-time provisioning, by a local administrator, or by an import. The Identity Service must locate the correct user before it can deactivate or delete it.
+
+* The Application MUST advertise each User attribute on which it enforces uniqueness through that attribute's "uniqueness" characteristic in its User schema at the /Schemas endpoint ([@!RFC7643] section 7). This always includes "userName" ([@!RFC7643] section 4.1.1), and may include others, such as "emails.value" or "employeeNumber". The SCIM 2.0 Interoperability Profile requires filtering support on these attributes.
+* If the Application supports the "externalId" attribute, the Identity Service MAY set it after locating the user, and the Application MUST accept that update, including at AL1.
 
 # AL2: User and Group Management
 
