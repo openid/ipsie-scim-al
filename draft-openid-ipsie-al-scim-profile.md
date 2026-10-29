@@ -243,6 +243,12 @@ A user resource may have various credentials or similar data associated with the
 
 The Identity Service and the Application MUST support user creation via POST /Users.
 
+Before creating a user, the Identity Service SHOULD query the Application with "eq" filters on the User attributes advertised as unique ((#linking)), and link to an existing user if one is found.
+
+If a POST /Users request returns HTTP 409 Conflict with a "scimType" of "uniqueness", the Identity Service SHOULD attempt to locate and link to the existing user rather than treating the request as a terminal failure.
+
+When the Application returns HTTP 409 Conflict with a "scimType" of "uniqueness", the error response MUST identify the attribute or attributes whose values caused the conflict (for example, a "detail" value of "Uniqueness conflict with attribute userName"). The error response SHOULD NOT include any other information about the conflict, such as the conflicting value or any information about the existing resource.
+
 ### Update User (PATCH /Users/{id}) {#update-user}
 
 The Identity Service and the Application MUST support updating a user's attribute values via the SCIM operation PATCH /Users/{id}.
