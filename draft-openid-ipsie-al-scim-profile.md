@@ -122,8 +122,8 @@ The following requirements ensure consistent and secure handling of access token
 
 ## Performance and Efficiency
 
-* The Application MUST enforce rate limits on all SCIM endpoints and must respond with appropriate headers, such as "429 Too Many Requests" and "Retry-After," when limits are exceeded.
-* The Application MUST support at least 25 SCIM requests per second. This requirement is per-tenant for multi-tenant (B2B SaaS, etc.) applications.
+* When the Application limits the rate of SCIM requests, it MUST follow the rate limiting requirements of the SCIM 2.0 Interoperability Profile.
+* The Application MUST support at least 25 SCIM requests per second per tenant without rate limiting them. A tenant is a single customer's instance of the Application; for an Application that is not multi-tenant, the whole Application is one tenant. The minimum applies to the tenant as a whole, combined across all Identity Service connections to that tenant.
 * The Application MUST support PATCH requests that update multiple attributes within a single request.
 * The Identity Service SHOULD optimize its SCIM request logic to minimize the number of SCIM requests made for each resource in a short period of time. As an example, a single PATCH request containing multiple attribute updates should be made rather than updating each attribute in a separate PATCH request.
 
@@ -273,7 +273,6 @@ Additionally, the following requirements are included to address security consid
 * **Error Handling**: Error responses SHALL use the SCIM error format and SHALL NOT leak internal details.
 * **Replay Resistance**: Access tokens SHALL expire and nonces SHALL be validated to prevent replay.
 * **Auditing**: All SCIM requests resulting in the creation, deletion, or modification of a SCIM resource SHALL be logged for audit and troubleshooting.
-* **Rate Limiting**: All endpoints SHALL enforce rate limiting and must respond with "429 Too Many Requests" when limits are exceeded.
 
 # IANA Considerations
 
