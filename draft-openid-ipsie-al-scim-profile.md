@@ -131,9 +131,22 @@ The following requirements ensure consistent and secure handling of access token
 
 AL1 requires the Application to deprovision users at the request of the Identity Service. The Identity Service can suspend, archive, delete, or otherwise deprovision accounts at the Application.
 
-## Deactivate or Reactivate User (PATCH /Users/{id})
+## Deprovisioning Mechanisms {#deprovisioning-mechanisms}
 
-Changes to the user activation status, such deactivation and reactivation, are performed by the SCIM operation PATCH /Users/{id}
+The Application MUST support at least one of the following, and MAY support both:
+
+* Deactivation of a user by setting the "active" attribute to false via PATCH /Users/{id}, as described in (#deactivate-user). An Application that supports this MUST define the "active" attribute in its User schema.
+* Deletion of a user via DELETE /Users/{id}, as described in (#delete-user).
+
+The Identity Service MUST deprovision users using a mechanism the Application supports.
+
+## Schema {#al1-schema}
+
+The Application MUST include the "userName" attribute in the User schema.
+
+## Deactivate or Reactivate User (PATCH /Users/{id}) {#deactivate-user}
+
+The requirements in this section apply if the Application supports the "active" attribute. Changes to the user activation status, such as deactivation and reactivation, are performed by the SCIM operation PATCH /Users/{id}.
 
 The Identity Service SHOULD propagate user deactivation events to the Application within 5 minutes of the user being deactivated.
 
@@ -150,9 +163,9 @@ When a user account is deactivated, all access mechanisms and authorizations ass
 
 The Application MUST allow reactivation of a deactivated user.
 
-## Delete User (DELETE /Users/{id})
+## Delete User (DELETE /Users/{id}) {#delete-user}
 
-Applications MAY allow users to be deleted via the SCIM operation DELETE /Users/{id}.
+The Application MAY support deleting users via the SCIM operation DELETE /Users/{id}, subject to the requirement in (#deprovisioning-mechanisms) that it support at least one deprovisioning mechanism.
 
 After a user is deleted, the Application MUST allow the creation of a new user with the same username.
 
@@ -164,7 +177,7 @@ The Application MUST support retrieving a single user by ID via the SCIM operati
 
 ## List Users By Alternate Identifier (GET /Users?)
 
-The Application MUST support the following filter expressions:
+The Application MUST support each of the following filter expressions whose attributes it supports:
 
 * username eq \{username\}
 * externalId eq \{externalId\}
@@ -283,8 +296,8 @@ This document has no IANA actions.
 Implementation of all mandatory requirements at each level results in a SCIM 2.0 deployment satisfying the corresponding IPSIE Account Lifecycle assurance level.
 
 * **AL1 (User Deprovisioning)**
-  * **Identity Service (SCIM client)**: SHALL initiate deactivation and deletion operations for Users and SHALL adhere to the security considerations above.
-  * **Application (SCIM service provider)**: SHALL support PATCH /Users/{id} for deactivation and reactivation, SHALL support DELETE /Users/{id}, SHALL prevent local modifications outside of SCIM, SHALL enforce OAuth 2.0 JWT Profile for Authentication [@!RFC7523], and SHALL adhere to the security considerations above.
+  * **Identity Service (SCIM client)**: SHALL initiate deactivation or deletion operations for Users, using a mechanism the Application supports, and SHALL adhere to the security considerations above.
+  * **Application (SCIM service provider)**: SHALL support at least one of deactivation and reactivation via PATCH /Users/{id} or deletion via DELETE /Users/{id}, SHALL prevent local modifications outside of SCIM, SHALL enforce OAuth 2.0 JWT Profile for Authentication [@!RFC7523], and SHALL adhere to the security considerations above.
 
 * **AL2 (User and Group Management)** — requires AL1
   * **Identity Service (SCIM client)**: SHALL initiate all CRUD operations for Users and Groups and SHALL adhere to the security considerations above.
