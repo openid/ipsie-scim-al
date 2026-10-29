@@ -50,7 +50,7 @@ This document defines the SCIM 2.0 IPSIE Profile for enterprise identity lifecyc
 The profile is organized according to the three IPSIE Account Lifecycle assurance levels as defined in the IPSIE Levels specification:
 
 * **AL1 - User Deprovisioning**: The Application deprovisions users at the request of the Identity Service. This includes account deactivation and deletion.
-* **AL2 - User and Group Management**: The Identity Service synchronizes user provisioning and group membership with the Application. The Application accepts creation and updates of user accounts and maps groups and their memberships to application roles and capabilities.
+* **AL2 - User and Group Management**: The Identity Service manages the full lifecycle of user accounts at the Application, including creation and updates. If the Application supports groups, the Identity Service also synchronizes groups and their memberships, and the Application maps them to application roles and capabilities.
 * **AL3 - Role Management**: The Application exposes its available roles to the Identity Service, enabling centralized role assignment and synchronization.
 
 Each level is cumulative: AL2 requirements extend AL1, and AL3 requirements extend AL2.
@@ -108,35 +108,65 @@ The Identity Service and Application MUST use OAuth 2.0 [@!RFC6749] for authenti
 
 The following requirements ensure consistent and secure handling of access tokens and authorization server configuration:
 
-* OAuth 2.0 interactions MUST use the client_credentials grant type with JWT Client Authentication as defined in [@!RFC7523] section 2.2.
+* OAuth 2.0 interactions MUST use the client_credentials grant type. The Identity Service MUST authenticate to the Application's OAuth 2.0 authorization server using JWT client authentication ("private_key_jwt") as defined in [@!RFC7523] section 2.2, sending the "client_assertion" and "client_assertion_type" parameters in the token request body as defined in [@!RFC7521] section 4.2.
 * The Identity Provider SHALL acquire an access token and present that token in the {Authorization: Bearer} header on all subsequent SCIM requests.
-* The Identity Service MUST authenticate to the Application's OAuth 2.0 authorization server using HTTP Basic authentication in the Authorization request header. Transmission of client credentials (e.g., client_assertion, client_secret) in the HTTP request body is prohibited.
-* The Access Token MUST include the "scim" scope and not grant broader permissions.
-* Both the Application and the Identity Service MUST expose OAuth Authorization Server metadata as defined in [@!RFC8414]. The Application's metadata document MUST include a "token_endpoint" value identifying its OAuth 2.0 token endpoint. The Identity Service's metadata document MUST include a "jwks_uri" so that the Application can retrieve the Identity Service's public keys and validate the signatures of JWTs it issues.
+* Client authentication methods that use a shared secret, such as "client_secret_basic" and "client_secret_post", MUST NOT be used.
+* The Application MUST expose OAuth Authorization Server metadata as defined in [@!RFC8414], and its metadata document MUST include a "token_endpoint" value identifying its OAuth 2.0 token endpoint.
+* The Identity Service MUST publish the public keys used to sign its client assertions at a "jwks_uri" ([@!RFC7591] section 2), which the Application's authorization server uses to validate client assertions.
 
 ## SCIM Interoperability Requirements
 
 * Implementations conforming to this profile MUST also conform to the SCIM 2.0 Interoperability Profile [@!I-D.zollner-scim-interop-profile]. The requirements of this profile supplement and extend those of the SCIM 2.0 Interoperability Profile.
-* The Identity Service SHALL implement the required functionality of a SCIM client as defined in [@!RFC7643] and [@!RFC7644].
-* The Application SHALL implement the required functionality of a SCIM service provider as defined in [@!RFC7643] and [@!RFC7644].
+* For every resource type, endpoint, operation, and attribute that the Identity Service or the Application implements, whether or not this profile requires it, the implementation MUST behave as specified by the specification that defines it: [@!RFC7643] and [@!RFC7644] as modified by the SCIM 2.0 Interoperability Profile and this profile, or, for features defined by other SCIM specifications (e.g., cursor-based pagination [@!RFC9865]), that specification.
 * Local modifications to Users or Groups in the Application are prohibited.
 
 ## Performance and Efficiency
 
-* The Application MUST enforce rate limits on all SCIM endpoints and must respond with appropriate headers, such as "429 Too Many Requests" and "Retry-After," when limits are exceeded.
-* The Application MUST support at least 25 SCIM requests per second. This requirement is per-tenant for multi-tenant (B2B SaaS, etc.) applications.
-* The Application and the Identity Service MUST support the SCIM /Bulk endpoint defined in [@!RFC7643] section 3.7.
+* When the Application limits the rate of SCIM requests, it MUST follow the rate limiting requirements of the SCIM 2.0 Interoperability Profile.
+* The Application MUST support at least 25 SCIM requests per second per tenant without rate limiting them. A tenant is a single customer's instance of the Application; for an Application that is not multi-tenant, the whole Application is one tenant. The minimum applies to the tenant as a whole, combined across all Identity Service connections to that tenant.
 * The Application MUST support PATCH requests that update multiple attributes within a single request.
 * The Identity Service SHOULD optimize its SCIM request logic to minimize the number of SCIM requests made for each resource in a short period of time. As an example, a single PATCH request containing multiple attribute updates should be made rather than updating each attribute in a separate PATCH request.
-* The Identity Service SHOULD use the SCIM /Bulk endpoint when it plans to make changes to more than 100 SCIM resources in a 5 minute period.
 
 # AL1: User Deprovisioning
 
 AL1 requires the Application to deprovision users at the request of the Identity Service. The Identity Service can suspend, archive, delete, or otherwise deprovision accounts at the Application.
 
-## Deactivate or Reactivate User (PATCH /Users/{id})
+## Deprovisioning Mechanisms {#deprovisioning-mechanisms}
 
-Changes to the user activation status, such deactivation and reactivation, are performed by the SCIM operation PATCH /Users/{id}
+The Application MUST support at least one of the following, and MAY support both:
+
+* Deactivation of a user by setting the "active" attribute to false via PATCH /Users/{id}, as described in (#deactivate-user). An Application that supports this MUST define the "active" attribute in its User schema.
+* Deletion of a user via DELETE /Users/{id}, as described in (#delete-user).
+
+The Identity Service MUST deprovision users using a mechanism the Application supports.
+
+The Identity Service MUST deactivate or delete a user at the Application whenever the user is no longer entitled to access the Application. This includes, but is not limited to:
+
+* The user being deactivated or deleted in the Identity Service.
+* The user's assignment to the Application being removed in the Identity Service, whether the user was assigned directly or through a group.
+
+## Schema {#al1-schema}
+
+The Application MUST include the "userName" attribute in the User schema.
+
+## Deactivate or Reactivate User (PATCH /Users/{id}) {#deactivate-user}
+
+The requirements in this section apply if the Application supports the "active" attribute. Changes to the user activation status, such as deactivation and reactivation, are performed by the SCIM operation PATCH /Users/{id}.
+
+To deactivate a user, the Identity Service MUST send a PATCH /Users/{id} request containing the following operation:
+
+~~~ json
+{
+  "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+  "Operations": [
+    {"op": "replace", "path": "active", "value": false}
+  ]
+}
+~~~
+
+To reactivate a user, the Identity Service MUST send the same request with a "value" of true.
+
+At AL1, the Application is only required to support PATCH operations on the "active" attribute and, if the Application supports the "externalId" attribute, on "externalId" ((#linking)), and MAY reject PATCH operations on other attributes. Support for PATCH operations on other attributes is required at AL2 ((#update-user)).
 
 The Identity Service SHOULD propagate user deactivation events to the Application within 5 minutes of the user being deactivated.
 
@@ -153,9 +183,11 @@ When a user account is deactivated, all access mechanisms and authorizations ass
 
 The Application MUST allow reactivation of a deactivated user.
 
-## Delete User (DELETE /Users/{id})
+A deactivated user MUST continue to be returned by GET /Users/{id} and by filter queries ((#list-users-by-alternate-identifier)), with the "active" attribute set to false.
 
-Applications MAY allow users to be deleted via the SCIM operation DELETE /Users/{id}.
+## Delete User (DELETE /Users/{id}) {#delete-user}
+
+The Application MAY support deleting users via the SCIM operation DELETE /Users/{id}, subject to the requirement in (#deprovisioning-mechanisms) that it support at least one deprovisioning mechanism.
 
 After a user is deleted, the Application MUST allow the creation of a new user with the same username.
 
@@ -165,18 +197,25 @@ After a user is deleted, the Application MUST allow the creation of a new user w
 
 The Application MUST support retrieving a single user by ID via the SCIM operation GET /Users/{id}.
 
-## List Users By Alternate Identifier (GET /Users?)
+## List Users By Alternate Identifier (GET /Users?) {#list-users-by-alternate-identifier}
 
-The Application MUST support the following filter expressions:
+The Application MUST support each of the following filter expressions whose attributes it supports:
 
 * username eq \{username\}
 * externalId eq \{externalId\}
 * emails[value eq \{email\}]
 * emails[type eq "work" and value eq \{email\}]
 
+## Locating and Linking Existing Users {#linking}
+
+At AL1, users may exist in the Application that the Identity Service did not create, for example users created by single sign-on just-in-time provisioning, by a local administrator, or by an import. The Identity Service must locate the correct user before it can deactivate or delete it.
+
+* The Application MUST advertise each User attribute on which it enforces uniqueness through that attribute's "uniqueness" characteristic in its User schema at the /Schemas endpoint ([@!RFC7643] section 7). This always includes "userName" ([@!RFC7643] section 4.1.1), and may include others, such as "emails.value" or "employeeNumber". The SCIM 2.0 Interoperability Profile requires filtering support on these attributes.
+* If the Application supports the "externalId" attribute, the Identity Service MAY set it after locating the user, and the Application MUST accept that update, including at AL1.
+
 # AL2: User and Group Management
 
-AL2 extends AL1. In addition to deprovisioning, the Identity Service synchronizes user provisioning and group membership with the Application. The Application MUST accept creation and updates of user accounts from the Identity Service and MUST prohibit local account creation for users managed by the Identity Service. The Application MUST support mapping Identity Service groups to local Application roles and capabilities.
+AL2 extends AL1. In addition to deprovisioning, the Identity Service manages the full lifecycle of user accounts at the Application and, if the Application supports Groups, synchronizes groups and their memberships. The Application MUST accept creation and updates of user accounts from the Identity Service and MUST prohibit local account creation for users managed by the Identity Service. If the Application supports Groups, it MUST support mapping Identity Service groups to local Application roles and capabilities.
 
 ## User Provisioning
 
@@ -204,15 +243,19 @@ A user resource may have various credentials or similar data associated with the
 
 The Identity Service and the Application MUST support user creation via POST /Users.
 
-### Update User (PATCH /Users/{id})
+Before creating a user, the Identity Service SHOULD query the Application with "eq" filters on the User attributes advertised as unique ((#linking)), and link to an existing user if one is found.
+
+If a POST /Users request returns HTTP 409 Conflict with a "scimType" of "uniqueness", the Identity Service SHOULD attempt to locate and link to the existing user rather than treating the request as a terminal failure.
+
+When the Application returns HTTP 409 Conflict with a "scimType" of "uniqueness", the error response MUST identify the attribute or attributes whose values caused the conflict (for example, a "detail" value of "Uniqueness conflict with attribute userName"). The error response SHOULD NOT include any other information about the conflict, such as the conflicting value or any information about the existing resource.
+
+### Update User (PATCH /Users/{id}) {#update-user}
 
 The Identity Service and the Application MUST support updating a user's attribute values via the SCIM operation PATCH /Users/{id}.
 
 ### Get All Users (GET /Users)
 
 The Application MUST support retrieval of all users via the SCIM operation GET /Users.
-
-The Application SHOULD avoid returning more than 1,000 users per page. Support for cursor-based pagination by the Application is RECOMMENDED.
 
 ## Group Provisioning Operations
 
@@ -278,7 +321,6 @@ Additionally, the following requirements are included to address security consid
 * **Error Handling**: Error responses SHALL use the SCIM error format and SHALL NOT leak internal details.
 * **Replay Resistance**: Access tokens SHALL expire and nonces SHALL be validated to prevent replay.
 * **Auditing**: All SCIM requests resulting in the creation, deletion, or modification of a SCIM resource SHALL be logged for audit and troubleshooting.
-* **Rate Limiting**: All endpoints SHALL enforce rate limiting and must respond with "429 Too Many Requests" when limits are exceeded.
 
 # IANA Considerations
 
@@ -289,8 +331,8 @@ This document has no IANA actions.
 Implementation of all mandatory requirements at each level results in a SCIM 2.0 deployment satisfying the corresponding IPSIE Account Lifecycle assurance level.
 
 * **AL1 (User Deprovisioning)**
-  * **Identity Service (SCIM client)**: SHALL initiate deactivation and deletion operations for Users and SHALL adhere to the security considerations above.
-  * **Application (SCIM service provider)**: SHALL support PATCH /Users/{id} for deactivation and reactivation, SHALL support DELETE /Users/{id}, SHALL prevent local modifications outside of SCIM, SHALL enforce OAuth 2.0 JWT Profile for Authentication [@!RFC7523], and SHALL adhere to the security considerations above.
+  * **Identity Service (SCIM client)**: SHALL initiate deactivation or deletion operations for Users, using a mechanism the Application supports, and SHALL adhere to the security considerations above.
+  * **Application (SCIM service provider)**: SHALL support at least one of deactivation and reactivation via PATCH /Users/{id} or deletion via DELETE /Users/{id}, SHALL prevent local modifications outside of SCIM, SHALL enforce OAuth 2.0 JWT Profile for Authentication [@!RFC7523], and SHALL adhere to the security considerations above.
 
 * **AL2 (User and Group Management)** — requires AL1
   * **Identity Service (SCIM client)**: SHALL initiate all CRUD operations for Users and Groups and SHALL adhere to the security considerations above.
